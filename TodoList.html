@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body> -->
+<div id="app">
+    <todos @deletetodohandler="deleteTodo" @addtodohandler = "addTodo" :datas="todosData"></todos></todos>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    // component 2 using slots inside
+        Vue.component("todo", {
+            template: `
+            <div>
+                <h2 :style="{textTransform: 'capitalize'}"> <slot> </slot> </h2>
+            </div>
+        ` ,
+
+            props: ["datas"],
+
+            data() {
+                return {
+                    data: "new todo here"
+                }
+            }
+        });
+
+    // component 1 "todos"
+    Vue.component("todos",{
+        template: `
+            <div :style="style.centerDiv">
+                <h1> Todo List </h1>
+                <div :style="{textAlign: 'center'}"> 
+                    <h2 :style="style.todoColor" v-if="active" @click="active = !active"> + </h2>
+                    <div v-else>
+                        <input type="text" v-model="newTodo"/>
+                        <button @click="addNewtodo"> Add </button
+                    </div>    
+                </div>
+                <ul :style="style.ul">
+                    <li :style="{padding: '0', margin: '0px'}" :style="style.flx" v-for="data in datas" :key="data.id"> <todo>{{data.todo}}</todo> <span @click="deleteTodo(data)" :style="{lineHeight:'4', color: 'red'}"> X </span> </li>
+                    <li :style="{color: 'green'}"> <h2 :style="{textTransform: 'capitalize'}"> {{newTodo}} </h2> </li>
+                </ul>
+            </div>
+        ` ,
+
+        props:["datas"],
+
+        data(){
+            return{
+                style:{
+                    centerDiv: {
+                        width: "40%",
+                        margin: "30px auto",
+                        boxShadow: "2px 2px 3px grey",
+                        border: "1px solid grey",
+                        padding: "20px",
+                        textAlign: "center"
+                    },
+                    ul:{
+                        padding: "0px",
+                        listStyle: "none",
+                        margin: "0px"
+                    },
+                    flx:{
+                        display: "flex",
+                        justifyContent: "space-between"
+                    },
+                    todoColor:{
+                        color: "Green",
+                        fontSize: "25px"
+                    }
+
+
+                },
+                data: "new todo here",
+                newTodo: "",
+                active: true
+            }
+        },
+        methods:{
+            deleteTodo(data){
+                console.log(data)
+                this.$emit('deletetodohandler', data.id)
+            },
+            addNewtodo(){
+                const newTodo = this.newTodo
+                if(newTodo === ""){
+                    alert("todo cant be empty")
+                    return this.active = !this.active
+                }
+                this.$emit('addtodohandler', newTodo)
+                return (this.active = !this.active, this.newTodo="")
+            }
+        }
+    });
+
+    // main component syntax here
+ new Vue({
+     el: "#app",
+     data: {
+         title: "todo list",
+         todosData: [
+             {id:1, todo: "clean rooms"},
+             {id:2, todo: "go to work"},
+             {id:3, todo:"code my life out" }
+         ]
+     },
+     methods:{
+         doSomething(){
+             console.log("do something function")
+         },
+         deleteTodo(todoId){
+             let copyTodo = this.todosData
+             let todoIndex = copyTodo.findIndex((ele)=>{
+                 return ele.id === todoId
+             })
+             console.log(todoIndex)
+             this.todosData.splice(todoIndex, 1)
+         },
+         addTodo(data){
+             let todoData = this.todosData
+             let newData = { id : todoData.length + 1, todo: data }
+             todoData.push(newData)
+             console.log(todoData)
+         }
+     },
+     computeds(){
+         console.log("return something here")
+     },
+     wath: {
+         title:function(){
+             console.log("please watch my title")
+         }
+     }
+
+ })
+</script>
+</html>
